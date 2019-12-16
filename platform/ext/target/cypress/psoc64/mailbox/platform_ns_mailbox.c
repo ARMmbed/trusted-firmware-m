@@ -54,7 +54,6 @@ int32_t tfm_ns_mailbox_hal_notify_peer(void)
 
 static int32_t mailbox_sema_init(void)
 {
-#if defined(CY_IPC_DEFAULT_CFG_DISABLE)
     /* semaphore data */
     static uint32_t tfm_sema __attribute__((section("TFM_SHARED_DATA")));
 
@@ -63,7 +62,6 @@ static int32_t mailbox_sema_init(void)
                          &tfm_sema) != CY_IPC_SEMA_SUCCESS) {
         return PLATFORM_MAILBOX_INIT_ERROR;
     }
-#endif
     return PLATFORM_MAILBOX_SUCCESS;
 }
 
