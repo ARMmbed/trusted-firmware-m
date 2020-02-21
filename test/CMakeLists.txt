@@ -171,6 +171,7 @@ if (TFM_BUILD_IN_SPE)
 	endif()
 
 	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/framework/test_framework_integ_test.h
+			${CMAKE_CURRENT_SOURCE_DIR}/framework/test_framework_error_codes.h
 			${CMAKE_CURRENT_SOURCE_DIR}/test_services/tfm_secure_client_service/tfm_secure_client_service_api.h
 			DESTINATION export/tfm/test/inc)
 
