@@ -8,7 +8,7 @@
 #ifndef __INTEG_TEST_H__
 #define __INTEG_TEST_H__
 
-#include "test_framework.h"
+#include "test_framework_error_codes.h"
 
 #ifdef __cplusplus
 extern "C" {
