@@ -93,6 +93,12 @@ install(FILES ${PLATFORM_DIR}/target/cypress/psoc64/mailbox/platform_multicore.c
         ${PLATFORM_DIR}/target/cypress/psoc64/mailbox/platform_ns_mailbox.c
         DESTINATION export/tfm/src)
 
+# Export any platform-specific headers that useful for NS software.
+install(FILES
+        ${PLATFORM_DIR}/target/cypress/psoc64/partition/flash_layout.h
+        ${PLATFORM_DIR}/target/cypress/psoc64/partition/region_defs.h
+        DESTINATION export/platform/ext/target/cypress/psoc64/partition)
+
 if (NOT DEFINED BUILD_CMSIS_CORE)
   message(FATAL_ERROR "Configuration variable BUILD_CMSIS_CORE (true|false) is undefined!")
 elseif(BUILD_CMSIS_CORE)
