@@ -118,7 +118,11 @@ int32_t tfm_ns_mailbox_hal_init(struct ns_mailbox_queue_t *queue)
 
 const void *tfm_ns_mailbox_get_task_handle(void)
 {
+#ifdef TFM_MULTI_CORE_MULTI_CLIENT_CALL
     return os_wrapper_thread_get_handle();
+#else
+    return NULL;
+#endif
 }
 
 void tfm_ns_mailbox_hal_wait_reply(mailbox_msg_handle_t handle)
