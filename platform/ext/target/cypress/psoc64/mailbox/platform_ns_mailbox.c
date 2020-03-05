@@ -177,6 +177,10 @@ static cy_en_ipcsema_status_t mailbox_raw_spin_lock(uint32_t ipc_channel,
                  * notification event from secure core. However, it is more
                  * complex and requires more code and more modifications.
                  */
+                volatile uint32_t count = 1000;
+                while(count > 0) {
+                    count--;
+                }
                 Cy_IPC_Sema_Status(sema_num);
             }
         }
