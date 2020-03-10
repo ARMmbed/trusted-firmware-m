@@ -18,6 +18,9 @@ if (TFM_MULTI_CORE_TOPOLOGY)
     add_library(platform_ns STATIC EXCLUDE_FROM_ALL)
 endif()
 
+#CMSIS
+include_directories(${TFM_TEST_REPO_PATH}/CMSIS/RTOS2/Include)
+
 ###################### PSA interface (header only) #############################
 
 add_library(psa_interface INTERFACE)
