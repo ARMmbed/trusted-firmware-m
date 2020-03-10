@@ -7,10 +7,8 @@
 
 #include "ns_test_helpers.h"
 
-#include "os_wrapper/thread.h"
-#include "os_wrapper/semaphore.h"
-
 #include "tfm_nspm_api.h"
+#include "cmsis_os2.h"
 
 #define SST_TEST_TASK_STACK_SIZE (768)
 
@@ -19,7 +17,7 @@ struct test_task_t {
     struct test_result_t *ret;
 };
 
-static void *test_semaphore;
+static osSemaphoreId_t test_semaphore;
 
 /**
  * \brief Executes the supplied test task and then releases the test semaphore.
@@ -39,61 +37,66 @@ static void test_task_runner(void *arg)
     test->func(test->ret);
 
     /* Release the semaphore to unblock the parent thread */
-    os_wrapper_semaphore_release(test_semaphore);
+    osSemaphoreRelease(test_semaphore);
 
     /* Signal to the RTOS that the thread is finished */
-    os_wrapper_thread_exit();
+    osThreadExit();
 }
 
 void tfm_sst_run_test(const char *thread_name, struct test_result_t *ret,
                       test_func_t *test_func)
 {
-    void *current_thread_handle;
-    uint32_t current_thread_priority;
-    uint32_t err;
-    void *thread;
+    osThreadId_t current_thread_handle;
+    osPriority_t current_thread_priority;
+    osThreadId_t thread;
     struct test_task_t test_task = { .func = test_func, .ret = ret };
+    osSemaphoreAttr_t sema_attrib = {
+        .name = "sst_tests_sema",
+    };
+    osThreadAttr_t task_attribs = {
+        .tz_module = 1,
+        .name = thread_name,
+        .stack_size = SST_TEST_TASK_STACK_SIZE,
+    };
 
     /* Create a binary semaphore with initial count of 0 tokens available */
-    test_semaphore = os_wrapper_semaphore_create(1, 0, "sst_tests_sema");
+    test_semaphore = osSemaphoreNew(1, 0, &sema_attrib);
     if (!test_semaphore) {
         TEST_FAIL("Semaphore creation failed");
         return;
     }
 
-    current_thread_handle = os_wrapper_thread_get_handle();
+    current_thread_handle = osThreadGetId();
     if (!current_thread_handle) {
-        os_wrapper_semaphore_delete(test_semaphore);
+        osSemaphoreDelete(test_semaphore);
         TEST_FAIL("Failed to get current thread ID");
         return;
     }
 
-    err = os_wrapper_thread_get_priority(current_thread_handle,
-                                         &current_thread_priority);
-    if (err == OS_WRAPPER_ERROR) {
-        os_wrapper_semaphore_delete(test_semaphore);
+    current_thread_priority = osThreadGetPriority(current_thread_handle);
+    if (current_thread_priority == osPriorityError) {
+        osSemaphoreDelete(test_semaphore);
         TEST_FAIL("Failed to get current thread priority");
         return;
     }
+    task_attribs.priority = current_thread_priority;
 
     /* Start test thread */
-    thread = os_wrapper_thread_new(thread_name, SST_TEST_TASK_STACK_SIZE,
-                                   test_task_runner, &test_task,
-                                   current_thread_priority);
+    thread = osThreadNew(test_task_runner, &test_task, &task_attribs);
     if (!thread) {
-        os_wrapper_semaphore_delete(test_semaphore);
+        osSemaphoreDelete(test_semaphore);
         TEST_FAIL("Failed to create test thread");
         return;
     }
 
     /* Signal semaphore, wait indefinitely until unblocked by child thread */
-    err = os_wrapper_semaphore_acquire(test_semaphore, OS_WRAPPER_WAIT_FOREVER);
+    osSemaphoreAcquire(test_semaphore, osWaitForever);
 
     /* At this point, it means the binary semaphore has been released by the
      * test and re-acquired by this thread, so just finally release it and
      * delete it
      */
-    os_wrapper_semaphore_release(test_semaphore);
+    osSemaphoreRelease(test_semaphore);
 
-    os_wrapper_semaphore_delete(test_semaphore);
+    osSemaphoreDelete(test_semaphore);
 }
