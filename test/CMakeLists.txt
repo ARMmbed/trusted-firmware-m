@@ -208,12 +208,5 @@ else ()
 			DESTINATION export/tfm/test/lib
 			PUBLIC_HEADER DESTINATION export/tfm/test/inc)
 
-	if(ENABLE_PROTECTED_STORAGE_SERVICE_TESTS)
-		#only PS tests are using semaphore and thread APIs
-		install(FILES ${TFM_ROOT_DIR}/interface/include/os_wrapper/semaphore.h
-				${TFM_ROOT_DIR}/interface/include/os_wrapper/thread.h
-			DESTINATION export/tfm/include/os_wrapper)
-	endif()
-
 	embedded_project_end(tfm_non_secure_tests)
 endif()

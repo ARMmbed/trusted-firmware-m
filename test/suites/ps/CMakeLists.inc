@@ -46,6 +46,7 @@ elseif (ENABLE_PROTECTED_STORAGE_SERVICE_TESTS)
 	endif()
 
 	#Setting include directories
+	embedded_include_directories(PATH ${CMSIS_DIR}/RTOS2/Include ABSOLUTE)
 	embedded_include_directories(PATH ${TFM_ROOT_DIR} ABSOLUTE)
 	embedded_include_directories(PATH ${TFM_ROOT_DIR}/test/interface/include ABSOLUTE)
 	embedded_include_directories(PATH ${TFM_ROOT_DIR}/interface/include ABSOLUTE)

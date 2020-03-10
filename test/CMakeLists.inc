@@ -34,6 +34,13 @@ endif()
 embedded_include_directories(PATH ${TFM_ROOT_DIR}/secure_fw/spm ABSOLUTE)
 embedded_include_directories(PATH ${TFM_ROOT_DIR}/bl2/include ABSOLUTE)
 
+#CMSIS
+get_filename_component(CMSIS_DIR ${TFM_ROOT_DIR}/../tf-m-tests/CMSIS ABSOLUTE)
+
+if(NOT EXISTS ${CMSIS_DIR})
+	message(FATAL_ERROR "Missing CMSIS. Please clone the tf-m-tests repo.")
+endif()
+
 # Include the test framework
 include(${CMAKE_CURRENT_LIST_DIR}/framework/CMakeLists.inc)
 
