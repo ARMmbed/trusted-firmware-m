@@ -40,8 +40,8 @@ int32_t tfm_platform_ns_wait_for_s_cpu_ready(void);
  * \brief Acquire the multi-core lock for synchronizing PSA client call(s)
  *        The actual implementation depends on the use scenario.
  *
- * \return \ref OS_WRAPPER_SUCCESS on success
- * \return \ref OS_WRAPPER_ERROR on error
+ * \return \ref TFM_SUCCESS on success
+ * \return \ref TFM_ERROR_GENERIC on error
  */
 uint32_t tfm_ns_multi_core_lock_acquire(void);
 
@@ -49,8 +49,8 @@ uint32_t tfm_ns_multi_core_lock_acquire(void);
  * \brief Release the multi-core lock for synchronizing PSA client call(s)
  *        The actual implementation depends on the use scenario.
  *
- * \return \ref OS_WRAPPER_SUCCESS on success
- * \return \ref OS_WRAPPER_ERROR on error
+ * \return \ref TFM_SUCCESS on success
+ * \return \ref TFM_ERROR_GENERIC on error
  */
 uint32_t tfm_ns_multi_core_lock_release(void);
 
