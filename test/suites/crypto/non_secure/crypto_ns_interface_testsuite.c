@@ -56,6 +56,7 @@ static void tfm_crypto_test_6037(struct test_result_t *ret);
 #ifdef TFM_CRYPTO_TEST_HKDF
 static void tfm_crypto_test_6038(struct test_result_t *ret);
 #endif /* TFM_CRYPTO_TEST_HKDF */
+static void tfm_crypto_test_6039(struct test_result_t *ret);
 
 static struct test_t crypto_tests[] = {
     {&tfm_crypto_test_6001, "TFM_CRYPTO_TEST_6001",
@@ -131,6 +132,8 @@ static struct test_t crypto_tests[] = {
     {&tfm_crypto_test_6038, "TFM_CRYPTO_TEST_6038",
      "Non Secure HKDF key derivation", {TEST_PASSED} },
 #endif /* TFM_CRYPTO_TEST_HKDF */
+    {&tfm_crypto_test_6039, "TFM_CRYPTO_TEST_6039",
+     "Non Secure key enrollment policy interface", {TEST_PASSED} },
 };
 
 void register_testsuite_ns_crypto_interface(struct test_suite_t *p_test_suite)
@@ -305,3 +308,8 @@ static void tfm_crypto_test_6038(struct test_result_t *ret)
     psa_key_derivation_test(PSA_ALG_HKDF(PSA_ALG_SHA_256), ret);
 }
 #endif /* TFM_CRYPTO_TEST_HKDF */
+
+static void tfm_crypto_test_6039(struct test_result_t *ret)
+{
+    psa_enrollment_algorithm_interface_test(ret);
+}

@@ -881,6 +881,75 @@ void psa_policy_key_interface_test(struct test_result_t *ret)
     ret->val = TEST_PASSED;
 }
 
+void psa_enrollment_algorithm_interface_test(struct test_result_t *ret)
+{
+    const psa_algorithm_t alg = PSA_ALG_ECDH;
+    psa_algorithm_t alg_out;
+    const psa_algorithm_t alg2 = PSA_ALG_ECDSA_ANY;
+    psa_algorithm_t alg2_out;
+    psa_key_attributes_t key_attributes = psa_key_attributes_init();
+    psa_key_attributes_t retrieved_attributes = psa_key_attributes_init();
+    const psa_key_usage_t usage = PSA_KEY_USAGE_DERIVE |
+        PSA_KEY_USAGE_SIGN_HASH | PSA_KEY_USAGE_VERIFY_HASH;
+    psa_key_usage_t usage_out;
+    const uint8_t data[] = {0x49, 0xc9, 0xa8, 0xc1, 0x8c, 0x4b, 0x88, 0x56,
+        0x38, 0xc4, 0x31, 0xcf, 0x1d, 0xf1, 0xc9, 0x94, 0x13, 0x16, 0x09, 0xb5,
+        0x80, 0xd4, 0xfd, 0x43, 0xa0, 0xca, 0xb1, 0x7d, 0xb2, 0xf1, 0x3e,
+        0xee};
+    psa_status_t status;
+    psa_key_handle_t key_handle;
+
+    /* Set the key policy values */
+    psa_set_key_usage_flags(&key_attributes, usage);
+    psa_set_key_algorithm(&key_attributes, alg);
+    psa_set_key_enrollment_algorithm(&key_attributes, alg2);
+    psa_set_key_type(&key_attributes,
+        PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP256R1));
+
+    /* Import a key to the key handle for which policy has been set */
+    status = psa_import_key(&key_attributes, data, sizeof(data),
+                            &key_handle);
+    if (status != PSA_SUCCESS) {
+        TEST_FAIL("Failed to import a key");
+        return;
+    }
+
+    status = psa_get_key_attributes(key_handle, &retrieved_attributes);
+    if (status != PSA_SUCCESS) {
+        TEST_FAIL("Error getting key metadata");
+        goto destroy_key;
+    }
+
+    /* Check that the key policy has the correct usage */
+    usage_out = psa_get_key_usage_flags(&retrieved_attributes);
+    if (usage_out != usage) {
+        TEST_FAIL("Unexpected usage value");
+        goto destroy_key;
+    }
+
+    /* Check that the key policy has the correct algorithm */
+    alg_out = psa_get_key_algorithm(&retrieved_attributes);
+    if (alg_out != alg) {
+        TEST_FAIL("Unexpected algorithm value");
+        goto destroy_key;
+    }
+
+    /* Check that the key policy has the correct enrollment algorithm */
+    alg2_out = psa_get_key_enrollment_algorithm(&retrieved_attributes);
+    if (alg2_out != alg2) {
+        TEST_FAIL("Unexpected enrollment algorithm value");
+        goto destroy_key;
+    }
+
+    ret->val = TEST_PASSED;
+
+destroy_key:
+    status = psa_destroy_key(key_handle);
+    if (status != PSA_SUCCESS) {
+        TEST_FAIL("Failed to destroy key");
+    }
+}
+
 void psa_policy_invalid_policy_usage_test(struct test_result_t *ret)
 {
     psa_status_t status;

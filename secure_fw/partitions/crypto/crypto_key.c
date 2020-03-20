@@ -54,6 +54,7 @@ psa_status_t tfm_crypto_key_attributes_from_client(
     key_attributes->core.lifetime = client_key_attr->lifetime;
     key_attributes->core.policy.usage = client_key_attr->usage;
     key_attributes->core.policy.alg = client_key_attr->alg;
+    key_attributes->core.policy.alg2 = client_key_attr->alg2;
     key_attributes->core.bits = client_key_attr->bits;
 
     /* Use the client key id as the key_id and its partition id as the owner */
@@ -79,6 +80,7 @@ psa_status_t tfm_crypto_key_attributes_to_client(
     client_key_attr->lifetime = key_attributes->core.lifetime;
     client_key_attr->usage = key_attributes->core.policy.usage;
     client_key_attr->alg = key_attributes->core.policy.alg;
+    client_key_attr->alg2 = key_attributes->core.policy.alg2;
     client_key_attr->bits = key_attributes->core.bits;
 
     /* Return the key_id as the client key id, do not return the owner */

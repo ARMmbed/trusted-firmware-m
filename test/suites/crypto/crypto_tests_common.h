@@ -164,6 +164,14 @@ void psa_invalid_key_length_test(struct test_result_t *ret);
 void psa_policy_key_interface_test(struct test_result_t *ret);
 
 /**
+ * \brief Tests the key enrollment policy interface
+ *
+ * \param[out] ret Test result
+ *
+ */
+void psa_enrollment_algorithm_interface_test(struct test_result_t *ret);
+
+/**
  * \brief Tests invalid policy usage
  *
  * \param[out] ret Test result
