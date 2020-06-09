@@ -62,7 +62,7 @@ uint32_t tfm_plat_test_get_userled_mask(void)
     return USERLED_MASK;
 }
 
-
+#if DOMAIN_NS == 0
 void tfm_plat_test_secure_timer_start(void)
 {
     if (!timer_cmsdk_is_initialized(&CMSDK_TIMER0_DEV_S)) {
@@ -80,6 +80,8 @@ void tfm_plat_test_secure_timer_stop(void)
     timer_cmsdk_clear_interrupt(&CMSDK_TIMER0_DEV_S);
 }
 
+#else
+
 void tfm_plat_test_non_secure_timer_start(void)
 {
     if (!timer_cmsdk_is_initialized(&CMSDK_TIMER1_DEV_NS)) {
@@ -96,3 +98,4 @@ void tfm_plat_test_non_secure_timer_stop(void)
     timer_cmsdk_disable_interrupt(&CMSDK_TIMER1_DEV_NS);
     timer_cmsdk_clear_interrupt(&CMSDK_TIMER1_DEV_NS);
 }
+#endif /* DOMAIN_NS == 0 */
