@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Arm Limited. All rights reserved.
+ * Copyright (c) 2019-2020 Arm Limited. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 #include "platform_base_address.h"
 #include "RTE_Device.h"
 #include "flash_layout.h"
+#include "cmsis_driver_config.h"
 
 #ifndef ARG_UNUSED
 #define ARG_UNUSED(arg)  ((void)arg)
@@ -192,6 +193,8 @@ static int32_t ARM_Flash_ProgramData(uint32_t addr, const void *data,
 {
     uint32_t start_addr = FLASH0_DEV->memory_base + addr;
     int32_t rc = 0;
+    bool cache_is_used = false;
+    bool mram_fast_read_is_used = false;
 
     /* Check flash memory boundaries and alignment with minimal write size */
     rc  = is_range_valid(FLASH0_DEV, addr + cnt);
@@ -207,8 +210,28 @@ static int32_t ARM_Flash_ProgramData(uint32_t addr, const void *data,
         return ARM_DRIVER_ERROR;
     }
 
+    /* Disable cache and invalidate before changing MRAM content */
+    if (arm_cache_is_enabled(&SSE_200_CACHE_DEV)) {
+        cache_is_used = true;
+        arm_cache_disable_blocking(&SSE_200_CACHE_DEV);
+        arm_cache_full_invalidate_blocking(&SSE_200_CACHE_DEV);
+    }
+    /* Disable mram fast read mode to avoid faults */
+    if (musca_s1_scc_mram_is_fast_read_enabled(&MUSCA_S1_SCC_DEV)) {
+        mram_fast_read_is_used = true;
+        musca_s1_scc_mram_fast_read_disable(&MUSCA_S1_SCC_DEV);
+    }
+
     /* Flash interface just emulated over MRAM, use memcpy */
     memcpy((void *)start_addr, data, cnt);
+
+    if (mram_fast_read_is_used) {
+        musca_s1_scc_mram_fast_read_enable(&MUSCA_S1_SCC_DEV);
+    }
+    if (cache_is_used){
+        arm_cache_enable_blocking(&SSE_200_CACHE_DEV);
+    }
+
     return ARM_DRIVER_OK;
 }
 
@@ -216,6 +239,8 @@ static int32_t ARM_Flash_EraseSector(uint32_t addr)
 {
     uint32_t start_addr = FLASH0_DEV->memory_base + addr;
     uint32_t rc = 0;
+    bool cache_is_used = false;
+    bool mram_fast_read_is_used = false;
 
     rc  = is_range_valid(FLASH0_DEV, addr);
     rc |= is_sector_aligned(FLASH0_DEV, addr);
@@ -223,10 +248,30 @@ static int32_t ARM_Flash_EraseSector(uint32_t addr)
         return ARM_DRIVER_ERROR_PARAMETER;
     }
 
+    /* Disable cache and invalidate before changing MRAM content */
+    if (arm_cache_is_enabled(&SSE_200_CACHE_DEV)) {
+        cache_is_used = true;
+        arm_cache_disable_blocking(&SSE_200_CACHE_DEV);
+        arm_cache_full_invalidate_blocking(&SSE_200_CACHE_DEV);
+    }
+    /* Disable mram fast read mode to avoid faults */
+    if (musca_s1_scc_mram_is_fast_read_enabled(&MUSCA_S1_SCC_DEV)) {
+        mram_fast_read_is_used = true;
+        musca_s1_scc_mram_fast_read_disable(&MUSCA_S1_SCC_DEV);
+    }
+
     /* Flash interface just emulated over MRAM, use memset */
     memset((void *)start_addr,
            FLASH0_DEV->data->erased_value,
            FLASH0_DEV->data->sector_size);
+
+    if (mram_fast_read_is_used) {
+        musca_s1_scc_mram_fast_read_enable(&MUSCA_S1_SCC_DEV);
+    }
+    if (cache_is_used){
+        arm_cache_enable_blocking(&SSE_200_CACHE_DEV);
+    }
+
     return ARM_DRIVER_OK;
 }
 
@@ -235,6 +280,20 @@ static int32_t ARM_Flash_EraseChip(void)
     uint32_t i;
     uint32_t addr = FLASH0_DEV->memory_base;
     int32_t rc = ARM_DRIVER_ERROR_UNSUPPORTED;
+    bool cache_is_used = false;
+    bool mram_fast_read_is_used = false;
+
+    /* Disable cache and invalidate before changing MRAM content */
+    if (arm_cache_is_enabled(&SSE_200_CACHE_DEV)) {
+        cache_is_used = true;
+        arm_cache_disable_blocking(&SSE_200_CACHE_DEV);
+        arm_cache_full_invalidate_blocking(&SSE_200_CACHE_DEV);
+    }
+    /* Disable mram fast read mode to avoid faults */
+    if (musca_s1_scc_mram_is_fast_read_enabled(&MUSCA_S1_SCC_DEV)) {
+        mram_fast_read_is_used = true;
+        musca_s1_scc_mram_fast_read_disable(&MUSCA_S1_SCC_DEV);
+    }
 
     /* Check driver capability erase_chip bit */
     if (DriverCapabilities.erase_chip == 1) {
@@ -248,6 +307,14 @@ static int32_t ARM_Flash_EraseChip(void)
             rc = ARM_DRIVER_OK;
         }
     }
+
+    if (mram_fast_read_is_used) {
+        musca_s1_scc_mram_fast_read_enable(&MUSCA_S1_SCC_DEV);
+    }
+    if (cache_is_used){
+        arm_cache_enable_blocking(&SSE_200_CACHE_DEV);
+    }
+
     return rc;
 }
 
