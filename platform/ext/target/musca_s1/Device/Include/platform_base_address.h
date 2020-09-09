@@ -137,21 +137,21 @@ extern "C" {
 
 /* Code SRAM memory */
 #define MPC_CODE_SRAM_RANGE_BASE_NS  (0x00000000)
-#define MPC_CODE_SRAM_RANGE_LIMIT_NS (0x00200000)
+#define MPC_CODE_SRAM_RANGE_LIMIT_NS (0x001FFFFF)
 #define MPC_CODE_SRAM_RANGE_BASE_S   (0x10000000)
-#define MPC_CODE_SRAM_RANGE_LIMIT_S  (0x10200000)
+#define MPC_CODE_SRAM_RANGE_LIMIT_S  (0x101FFFFF)
 
 /* QSPI Flash memory */
 #define MPC_QSPI_RANGE_BASE_NS        (0x00200000)
-#define MPC_QSPI_RANGE_LIMIT_NS       (0x02200000)
+#define MPC_QSPI_RANGE_LIMIT_NS       (0x021FFFFF)
 #define MPC_QSPI_RANGE_BASE_S         (0x10200000)
-#define MPC_QSPI_RANGE_LIMIT_S        (0x12200000)
+#define MPC_QSPI_RANGE_LIMIT_S        (0x121FFFFF)
 
 /* MRAM memory */
 #define MPC_MRAM_RANGE_BASE_NS        (0x0A000000)
-#define MPC_MRAM_RANGE_LIMIT_NS       (0x0A200000)
+#define MPC_MRAM_RANGE_LIMIT_NS       (0x0A1FFFFF)
 #define MPC_MRAM_RANGE_BASE_S         (0x1A000000)
-#define MPC_MRAM_RANGE_LIMIT_S        (0x1A200000)
+#define MPC_MRAM_RANGE_LIMIT_S        (0x1A1FFFFF)
 
 /** @} */ /* End of group Device_Peripheral_peripheralAddr */
 
