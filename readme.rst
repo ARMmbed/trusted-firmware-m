@@ -5,6 +5,18 @@ The Trusted Firmware-M software implementation contained in this project is
 designed to be a reference implementation of the
 `Platform Security Architecture`_ (PSA) for `ARMv7-M and Armv8-M`_.
 
+#############################
+Mbed OS + Trusted Firmware-M
+#############################
+
+This specific branch supports additional patches required for integration
+of Mbed OS with Trusted Firmware-M latest implementation.
+
+.. Note::
+    This branch is experimental and not to be used for any production
+    purpose, the Mbed OS patches should be tested and reviewed again
+    before upstreaming.
+
 ###########
 Quick Links
 ###########
