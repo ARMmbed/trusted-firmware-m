@@ -52,7 +52,7 @@ int stdio_output_string(const unsigned char *str, uint32_t len)
 /* Struct FILE is implemented in stdio.h. Used to redirect printf to
  * STDIO_DRIVER
  */
-FILE __stdout;
+__attribute__((weak)) FILE __stdout;
 /* __ARMCC_VERSION is only defined starting from Arm compiler version 6 */
 int fputc(int ch, FILE *f)
 {
