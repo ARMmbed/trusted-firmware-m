@@ -1,3 +1,9 @@
+#################
+Deprecation note!
+#################
+
+**Please note: This repository is deprecated and it is no longer actively maintained. Please use the official TF-M repository instead: https://git.trustedfirmware.org/TF-M/trusted-firmware-m.git/**
+
 ##################
 Trusted Firmware-M
 ##################
